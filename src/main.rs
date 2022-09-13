@@ -34,35 +34,15 @@ fn usage_string() -> String
     \x20 transactions.\n\n\
     \x20 After reading in private keys, solsign enters a loop where it waits to read\n\
     \x20 Base64 encoded transactions from standard input. After each encoded\n\
-    \x20 transaction is read in, the user is prompted to perform any of these actions\n\
-    \x20 by typing the corresponding letter:\n\n\
-    \x20   (,) Repeat a display of the Base64 encoded transaction.\n\
-    \x20   (.) Display a decoded version of the transaction.\n\
-    \x20   (-) Sign the transaction and display the Base64 encoded version of the\n\
-    \x20       signed transaction. Note that the transaction may still not be\n\
-    \x20       completely signed if not all private keys were available for signing.\n\
-    \x20   (=) Sign the transaction and display the base-58 encoded fee payer\n\
-    \x20       signature. This option is only available if the transaction can be\n\
-    \x20       completely signed using available keys.\n\
-    \x20   (`) Clear any partially or fully read transaction from memory. This can\n\
-    \x20       be used in case accidental input was provided.\n\n\
-    \x20 These actions may be repeated for the current transaction until a new\n\
-    \x20 transaction is input.\n\n\
-    \x20 On entry of a new transaction, the same options are presented for it.\n\n\
-    \x20 If --no-prompt is specified, then no prompting will be done. Instead, solsign\n\
-    \x20 will read the private keys supplied on the command line, read a single\n\
-    \x20 Base64 encoded transaction from standard input, sign the transaction,\n\
-    \x20 write the Base64 encoded signed transaction to standard out, then exit.\n\n\
-    \x20 Input transactions are expected to be fully-formed Solana transactions,\n\
-    \x20 with any signatures not yet provided supplied as all zero bytes.  solsign\n\
-    \x20 identifies signatures that are required by finding all-zero signatures and\n\
-    \x20 then replacing them with the signature of the transaction as computed using\n\
-    \x20 the private key corresponding to the public key that should sign the\n\
-    \x20 transaction at that signature index.  This allows for partial signing of\n\
-    \x20 transactions, where one signer can sign it, then pass the Base64 encoded form\n\
-    \x20 of the partially signed transaction to another signer, who can then add their\n\
-    \x20 own signature, repeating this process until all signatures have been provided\n\
-    \x20 and the transaction is complete.\n".to_string()
+    \x20 transaction is read in, for any signatures not provided within the\n\
+    \x20 transaction, if the key required for that signature was provided to solsign,\n\
+    \x20 the transaction will be signed with that key.\n\n\
+    \x20 After all possible signatures are applied, if the transaction is still not\n\
+    \x20 completely signed, then the list of pubkeys which must still sign the\n\
+    \x20 transaction is printed, along with the Base64 encoded version of the\n\
+    \x20 partially signed transaction is printed, ready for further signing.\n\n\
+    \x20 If after signing, the transaction is completely signed, then the signature\n\
+    \x20 of the transaction is printed.\n".to_string()
 }
 
 // This comes from solana validator code base, which requires all transactions to fit inside an IPV4 UDP packet
