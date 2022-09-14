@@ -41,7 +41,7 @@ Finally, build it:
 
 `cargo build --manifest-path solsign/Cargo.toml --release`
 
-You will find the solsign binary at solsign/target/release/solsign.
+You will find the solsign binary at `solsign/target/release/solsign`.
 
 **Prebuilt Binaries**
 
