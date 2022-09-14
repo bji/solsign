@@ -23,7 +23,7 @@ solsign supports a few common workflows:
 
 **solsign is secure**.  It reads keypairs used for signing transactions, but does not output any sensitive information, including any aspect of private keys, nor does it write to any place other than the standard output.  And what it writes to standard output is completely secure, freely shareable information: encoded transactions as they would be sent over the network to solana validators for execution, plus the fee payer signature of those transactions, which is also used as the transaction id by the solana network.  Obviously transaction ids are not sensitive information as they are displayed and used all over the place.  To reiterate: **solsign never prints or transmits any sensitive information of any kind**.
 
-After solsign as started up, the user can delete any key files used as input since solsign only reads them on start-up.  Please be careful, never delete the last copy of your keys!
+After solsign has started up, the user can delete any key files used as input since solsign only reads them on start-up.  Please be careful, never delete the last copy of your keys!
 
 The whole point of solsign is to sign transactions with maximum security -- locally on a user's computer, possibly with no connection to the internet whatsoever, and copying only transactions and signatures in and out.
 
