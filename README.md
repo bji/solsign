@@ -83,6 +83,170 @@ Followed by a list of public keys of the keypairs that still must sign the trans
 
 And then the Base64 encoded version of the partially signed transaction, ready to be used in subsequent solsign invocations to continue signing.
 
+# Example Session #
+
+Here is an example of using solsign being used to sign a transaction.  Comments are interspersed:
+
+```
+$ solsign /tmp/key.json
+```
+
+solsign is started with a single key file to use for signing (/tmp/key.json).
+It is not necessary to start with a file; a user could instead just enter
+the key using mnemonic and passphrase later.
+
+```
+
+  Public keys provided thus far:
+
+    C7e6JVJQ2FnrLvETJ2KMHR8pvwSDJcQ2n8UTFaZz3yEy
+```
+
+solsign prints the keys that it knows about and can sign transactions with.
+
+```
+
+  Enter mnemonic seed words of next key, or press ENTER to continue:
+
+
+  Enter passphrase seed, or press ENTER for no passphrase:
+```
+
+The user has chosen to enter a mnemonic seed phrase and passphrase.  These
+are not displayed as they are typed.
+
+```
+
+  Derived Keys:
+
+   (0)                      9xXVsPkh8jLwxQBJk6kf2CZp8ko27UHbiHCQifECLpbi
+   (1)  m/44'/501'/0'/0'    CfRpvpSDq3kfvxrYyLqw1E1UQHnHD5aiLJ6vXeRJc98W
+   (2)  m/44'/501'/0'/1'    4K1SvwTLrvYoyPGPpP5G1wiL72mgtJiJipEDewBAccD3
+   (3)  m/44'/501'/0'/2'    4auo9rDdsaNuRTAvj3m5qGGRuRwMutk5XKACwbhrrx6K
+   (4)  m/44'/501'/0'/3'    5FVg3XqMmFdPATZ2zeyMeoanp9eyVKfgBJxYYEq7PeDG
+   (5)  m/44'/501'/0'/4'    ATBCmChQuf3jZDjB49F4sMaG5c7J38kioxKpsdc9MLuT
+   (6)  m/44'/501'/0'/5'    BiVGWuLgQU8iCwQ7xWZi2tFApF7Vv51AxfhC5HPf8KQ5
+   (7)  m/44'/501'/0'/6'    6BKweChix9m9Di9SnBFGvV6Py3XZBVgVf4M7DptDZJud
+   (8)  m/44'/501'/0'/7'    qMxq1R1amcX5tmUk21bCt4WSqeD7mRqer74nuqYsBo8
+   (9)  m/44'/501'/0'/8'    E29LTv4qHTevCjvZS3eT7qx8K5cKJJvbrKP2ufuz7a5D
+
+  Select a derived key 0 - 9 from above, or press ENTER to skip: 1
+  
+```
+
+The keys derived from the mnemonic and passphrase are shown and the user
+selects (1) as their key.  The reason for deriving multiple keys is that
+the same mnemonic and passphrase can generate keys differently depending
+on the program that was used to generate the key.  The solana command line
+would produce the key at (0), and most wallets would produce they key
+at (1), unless the user has created multiple accounts from the same
+wallet in which case some of the later key derivations may be the correct
+one.
+
+The user knows their public key (it's displayed by wallets, and it's not
+sensitive information) which is how they knew which one to select.
+
+```
+
+  Public keys provided thus far:
+
+    C7e6JVJQ2FnrLvETJ2KMHR8pvwSDJcQ2n8UTFaZz3yEy
+    CfRpvpSDq3kfvxrYyLqw1E1UQHnHD5aiLJ6vXeRJc98W
+
+  Enter mnemonic seed words of next key, or press ENTER to continue:
+
+```
+
+solsign shows that a new key is available for signing - the one that the
+user just entered.  But the user presses ENTER now to decline entering
+more keys.
+
+```
+
+  Enter a password to be challenged with before each transaction is signed
+  or press ENTER for no signing challenge password:
+
+```
+
+The user has entered a password that will be used to challenge them
+before every transaction is to be signed, to ensure that only the user
+is able to sign transactions.  This helps in situations where solsign
+is left running for a long time, waiting to accept new transactions
+for signing.  The password challenge ensures that no one else can walk
+up to the user's terminal and sign transactions.
+
+Note that the challenge password is not saved anywhere and so for every
+run of solsign the user can and should choose a new unique password
+for that run.  If the password is forgotten, it's a simple thing to
+restart solsign and type in a new password to use.
+
+
+```
+
+  Enter Base64 encoded transaction:
+
+```
+
+solsign is now waiting for transactions to be entered.
+
+```
+
+AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAcPpSP6/XjGgrH6v7iCy7QQOeOQBPwglBAk9Jy6QyeSwSpPb+EUsfYZyL62JkOHBWY52pVBwq0oLK4uTwWtaNHTv3tz5xPtCaHjGkJYHJH/BA1HTzS7j/hQTPgHtfJEJzoHhRIKD3+birK4FGp9UCjyEDhlMU/LjvCCfMf2+XvsNWSOMvkiyxpjfBXOn304hEPQliTMS85DRtUEgx4Cxd9ergJlqycce6gJ0gKAD8LOUY6W3cIpDz7GqVwAc/9PSL6KoHEUh6vG6a8uC4MiZduBbIveTuvg6ssUHcgA9hS7utuumN1RTvJI/arQIHQgqWJ7SfBTaflWjdefWROfCmSOxQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT0U9YrEr9wvxm7fiypSDWhnhQDstuaKolGxPYp1m5OqMlyWPTiSJ8bs9ECkUjg2DC1oTmdr/EIQEjnvY2+n4WZnNE8PV/r7jqaHrzOqvvKZNn5JYxJCHl/cO22HkjM+LC3BlsePRfEU4nVJ/awTDzVi4bHMaoP21SbbRvAP4KUYGlZAfwZF6jQzN8J60SCFssIJXW4MY1QnXxrDjna74MQbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpwD34W2dbMjp93Injd9sI5B+MqhHQPT6cjVRD78sNwNkBDRAACQQDBgECCwcABQ0OCgwIEAgAAAAAAAAAAGXNHQAAAAA=
+
+
+  Enter challenge password (5 attempts remaining): 
+  Enter challenge password (4 attempts remaining): 
+  Enter challenge password (3 attempts remaining):
+
+```
+
+The user copy-pastes a Base64 encoded transaction in for signing, then takes
+a few attempts to properly enter their challenge password.
+
+```
+
+  Transaction is complete:
+
+    Ab+EThyFDLUilIm6Dm1VDcZ+6ivtOH5G77IrcdsCeFJ1avmPmO0NPDHzHB9FNQr4UYptrc+O
+    6zi0r4sYg1s3KQABAAcPpSP6/XjGgrH6v7iCy7QQOeOQBPwglBAk9Jy6QyeSwSpPb+EUsfYZ
+    yL62JkOHBWY52pVBwq0oLK4uTwWtaNHTv3tz5xPtCaHjGkJYHJH/BA1HTzS7j/hQTPgHtfJE
+    JzoHhRIKD3+birK4FGp9UCjyEDhlMU/LjvCCfMf2+XvsNWSOMvkiyxpjfBXOn304hEPQliTM
+    S85DRtUEgx4Cxd9ergJlqycce6gJ0gKAD8LOUY6W3cIpDz7GqVwAc/9PSL6KoHEUh6vG6a8u
+    C4MiZduBbIveTuvg6ssUHcgA9hS7utuumN1RTvJI/arQIHQgqWJ7SfBTaflWjdefWROfCmSO
+    xQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT0U9YrEr9wvxm7fiypSDWhnhQDst
+    uaKolGxPYp1m5OqMlyWPTiSJ8bs9ECkUjg2DC1oTmdr/EIQEjnvY2+n4WZnNE8PV/r7jqaHr
+    zOqvvKZNn5JYxJCHl/cO22HkjM+LC3BlsePRfEU4nVJ/awTDzVi4bHMaoP21SbbRvAP4KUYG
+    lZAfwZF6jQzN8J60SCFssIJXW4MY1QnXxrDjna74MQbd9uHXZaGT2cvhRs7reawctIXtX1s3
+    kTqM9YV+/wCpwD34W2dbMjp93Injd9sI5B+MqhHQPT6cjVRD78sNwNkBDRAACQQDBgECCwcA
+    BQ0OCgwIEAgAAAAAAAAAAGXNHQAAAAA=
+
+  Signature:
+
+   4q5sbcseTSPcc9V8iPDE6JMJtznbWDM9xaUWatPo8sk8c65RQxobuDFWvwxFKFQPh7b2yDvbHh1YXVVgYKdQwrMu
+
+```
+
+The keys that the user supplied to solsign were sufficient for signing the
+transaction.  The completely signed transaction is printed out in Base64
+encoding, as well as the transaction signature (i.e. transaction id) of
+the transaction.
+
+Hopefully the user has a program available to them for accepting this text
+and submitting the signed transaction for execution.  The author, for
+example, has a Discord bot that will do this as part of a defi system
+under development.
+
+```
+
+  Enter Base64 encoded transaction:
+
+$
+```
+
+solsign waits for another transaction to sign, but the user instead
+typed Ctrl-D to end input; solsign exits and the user is returned to
+their shell prompt.
+
 ```
 $ solsign --help
 
