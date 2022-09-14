@@ -17,7 +17,7 @@ solsign supports a few common workflows:
 
 2. **Repeatedly signing single-signer transactions**: this is accomplished by passing the path to a key file to solsign on the command-line, **or** inputting the mnemonic and passphrase to solsign after it has started up.  After that, solsign will read transactions from standard input, sign them, and write the signatures to standard output, continuing to do so until the user ends the input.  This would be useful for repeated off-line signing of many transactions using the same signing key.
 
-3. **Performing a mulit-signer operation**: in this use case, a single transaction requires the signatures of many parties.  The unsigned transaction is first passed through one instance of solsign providing one key to use to sign the transaction.  The resulting partially signed transaction can be sent to the next signer, who will use solsign similarly to provide their signature.  This can be repeated numerous times until the transaction has been completely signed by all parties, at which point solsign will print out the completely signed transaction as well as its signature.
+3. **Performing a multi-signer operation**: in this use case, a single transaction requires the signatures of many parties.  The unsigned transaction is first passed through one instance of solsign providing one key to use to sign the transaction.  The resulting partially signed transaction can be sent to the next signer, who will use solsign similarly to provide their signature.  This can be repeated numerous times until the transaction has been completely signed by all parties, at which point solsign will print out the completely signed transaction as well as its signature.
 
 
 # Using solsign #
