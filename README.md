@@ -19,6 +19,15 @@ solsign supports a few common workflows:
 
 3. **Performing a multi-signer operation**: in this use case, a single transaction requires the signatures of many parties.  The unsigned transaction is first passed through one instance of solsign providing one key to use to sign the transaction.  The resulting partially signed transaction can be sent to the next signer, who will use solsign similarly to provide their signature.  This can be repeated numerous times until the transaction has been completely signed by all parties, at which point solsign will print out the completely signed transaction as well as its signature.
 
+# A Note About Security #
+
+**solsign is secure**.  It reads keypairs used for signing transactions, but does not output any sensitive information, including any aspect of private keys, nor does it write to any place other than the standard output.  And what it writes to standard output is completely secure, freely shareable information: encoded transactions as they would be sent over the network to solana validators for execution, plus the fee payer signature of those transactions, which is also used as the transaction id by the solana network.  Obviously transaction ids are not sensitive information as they are displayed and used all over the place.  To reiterate: **solsign never prints or transmits any sensitive information of any kind**.
+
+After solsign as started up, the user can delete any key files used as input since solsign only reads them on start-up.  Please be careful, never delete the last copy of your keys!
+
+The whole point of solsign is to sign transactions with maximum security -- locally on a user's computer, possibly with no connection to the internet whatsoever, and copying only transactions and signatures in and out.
+
+solsign could be used with a very secure signing strategy such as copying Base64 encoded transactions to a USB drive, taking that USB drive to a completely airgapped computer, signing them there using solsign, and then copying the signed transactions back to the internet-connected computer that will submit them to the network using the same USB drive.  In this way, keys can live completely on an airgapped computer, but arbitrary transactions can still be signed and submitted to the network.
 
 # Using solsign #
 
