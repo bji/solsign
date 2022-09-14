@@ -24,7 +24,7 @@ solsign supports a few common workflows:
 
 `solsign --help` will show brief help text describing its usage.
 
-Pass the `--no-prompt` command line option to cause solsign to skip the "reading keys from standard input" stop and to exit after a single transaction has been read in and processed.
+Pass the `--no-prompt` command line option to cause solsign to skip the "reading keys from standard input" step and to exit after a single transaction has been read in and processed.
 
 All arguments besides `--help` and `--no-prompt` are paths to key files which will be read in and used to sign transactions.
 
@@ -63,5 +63,36 @@ Followed by a list of public keys of the keypairs that still must sign the trans
 
 And then the Base64 encoded version of the partially signed transaction, ready to be used in subsequent solsign invocations to continue signing.
 
+```
+$ solsign --help
 
-LICENSE: Public domain, do what you want with it.
+Usage: solsign [--help]
+       solsign [--no-prompt] [KEY_FILE]...
+
+  solsign reads Solana transactions in Base64 encoded format from stdin,
+  displays them, signs them, writes signed transactions and signatures to
+  stdout.
+
+  On start-up, solsign reads any private key files specified on the command
+  line. It also prompts for mnemonic and passcode combinations from stdin.
+  Collectively these signing keys become available to the program to sign
+  transactions.
+
+  After reading in private keys, solsign enters a loop where it waits to read
+  Base64 encoded transactions from standard input. After each encoded
+  transaction is read in, for any signatures not provided within the
+  transaction, if the key required for that signature was provided to solsign,
+  the transaction will be signed with that key.
+
+  After all possible signatures are applied, if the transaction is still not
+  completely signed, then the list of pubkeys which must still sign the
+  transaction is printed, along with the Base64 encoded version of the
+  partially signed transaction is printed, ready for further signing.
+
+  If after signing, the transaction is completely signed, then the signature
+  of the transaction is printed.
+```
+
+# License #
+
+Public domain, do what you want with it.
