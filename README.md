@@ -9,8 +9,7 @@ means using keys that are stored locally on the user's computer to sign transact
 solsign reads complete solana transactions that have been encoded in Base64 format.  Base64 allows the binary data
 of a solana transaction to be presented in only text characters suitable for copying and pasting into a terminal
 window.  solsign reads transactions, signs them, and then either outputs the newly signed transaction (also in
-Base64 format) if the transaction still requires more signatures; or outputs the signature of the transaction if
-the transaction is now completely signed.
+Base64 format), and also outputs the signature of the transaction if the transaction is now completely signed.
 
 solsign supports a few common workflows:
 
