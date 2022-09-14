@@ -46,7 +46,7 @@ You will find the solsign binary at `solsign/target/release/solsign`.
 **Prebuilt Binaries**
 
 It is not recommended that you install a pre-built binary since you cannot be certain of the authenticity of the
-binary.  However, if you're willing to take the chance, here is are binaries prebuilt by the author:
+binary.  However, if you're willing to take the chance, here are binaries prebuilt by the author:
 
 ***Linux***
 
