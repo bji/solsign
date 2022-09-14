@@ -32,11 +32,17 @@ fn usage_string() -> String
     \x20 line. It also prompts for mnemonic and passcode combinations from stdin.\n\
     \x20 Collectively these signing keys become available to the program to sign\n\
     \x20 transactions.\n\n\
-    \x20 After reading in private keys, solsign enters a loop where it waits to read\n\
-    \x20 Base64 encoded transactions from standard input. After each encoded\n\
-    \x20 transaction is read in, for any signatures not provided within the\n\
-    \x20 transaction, if the key required for that signature was provided to solsign,\n\
-    \x20 the transaction will be signed with that key.\n\n\
+    \x20 After reading in private keys, solsign asks the user to supply a challenge\n\
+    \x20 password which will be used to ensure that the correct user is signing\n\
+    \x20 subsequent transactions.  Entering a password is highly recommended as it\n\
+    \x20 will protect the user in case an intruder gains access to the command\n\
+    \x20 line.\n\n\
+    \x20 solsign then enters a loop where it waits to read Base64 encoded\n\
+    \x20 transactions from standard input. After each encoded transaction is read\n\
+    \x20 in, if there was a challenge password set, solsign will require the user\n\
+    \x20 to supply that password before proceeding.  For any signatures not\n\
+    \x20 provided within the transaction, if the key required for that signature\n\
+    \x20 was provided to solsign, the transaction will be signed with that key.\n\n\
     \x20 After all possible signatures are applied, if the transaction is still not\n\
     \x20 completely signed, then the list of pubkeys which must still sign the\n\
     \x20 transaction is printed, along with the Base64 encoded version of the\n\
@@ -879,10 +885,29 @@ fn main()
         }
     }
 
+    println!("");
+
     if keys_in_order.len() == 0 {
-        eprintln!("\n  No keys provided, cannot sign.  Exiting.\n");
+        eprintln!("  No keys provided, cannot sign.  Exiting.\n");
         std::process::exit(-1);
     }
+
+    // Allow the user to provide a password that will be used to challenge them before each transaction is signed.
+    // This improves security - in case the user steps away from their computer, no one else can sign transactions if
+    // they don't know the password
+    let password = if no_prompt {
+        "".to_string()
+    }
+    else {
+        rpassword::prompt_password(
+            "  Enter a password to be challenged with before each transaction is signed\n  or press ENTER for no \
+             signing challenge password: "
+        )
+        .unwrap_or_else(|_| {
+            println!("\n");
+            std::process::exit(0);
+        })
+    };
 
     loop {
         println!("\n  Enter Base64 encoded transaction:\n");
@@ -921,6 +946,34 @@ fn main()
                                 eprintln!("\n{}\n", e);
                                 std::process::exit(-1);
                             });
+
+                            if password.len() > 0 {
+                                println!("\n");
+                                let mut attempts = 0;
+                                loop {
+                                    let prompt = format!(
+                                        "  Enter challenge password ({} attempt{} remaining): ",
+                                        (5 - attempts),
+                                        if attempts == 4 { "" } else { "s" }
+                                    );
+                                    let password_attempt = rpassword::prompt_password(prompt).unwrap_or_else(|_| {
+                                        println!("\n");
+                                        std::process::exit(0);
+                                    });
+
+                                    if password_attempt == password {
+                                        println!("");
+                                        break;
+                                    }
+
+                                    if attempts == 4 {
+                                        println!("\n  Password challenge failed.\n");
+                                        std::process::exit(0);
+                                    }
+
+                                    attempts += 1;
+                                }
+                            }
 
                             // For every signature incomplete within the transaction, add that signature if we
                             // have the key, otherwise, put the bs58 encoded key in here.

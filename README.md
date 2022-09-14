@@ -50,7 +50,18 @@ The key input sequence includes these steps:
 7. The user selects the line that corresponds to their public key by entering the line number at the next propmpt: `Select a derived key 0 - 9 from above, or press ENTER to skip:`.  If the user presses ENTER without any number, then the derived keys are ignored.
 8. This process repeats until the user presses ENTER at the mnemonic prompt indicating that there are no more keys to add.
 
-After this, solsign reads Base64 encoded transactions from standard input, signs them, and prints results to standard output.  It stops after a single transaction if the `--no-prompt` command line argument was given, otherwise loops continuing to wait for and process transactions until standard input ends.
+After keys have been input, solscan prompts the user to enter a challenge password with this text:
+
+`  Enter a password to be challenged with before each transaction is signed
+  or press ENTER for no signing challenge password:`
+
+The user may enter a password which they then must re-enter before any transaction will be signed by solsign.  **Note**
+that the password will not be visible when typed at any point.  Entering a challenge password is **highly recommended**
+as it protects the user from an intruder who could gain access to the command line and sign transactions using the
+user's keys.  The intruder will not know the challenge password that was entered and thus will be unable to sign any
+transactions.
+
+solsign then enters a loop in which it reads Base64 encoded transactions from standard input, signs them, and prints results to standard output.  It stops after a single transaction if the `--no-prompt` command line argument was given, otherwise loops continuing to wait for and process transactions until standard input ends.
 
 When a transaction is input, solsign signs it with whatever matching keys it has, and then if the transaction is completely signed, outputs:
 
