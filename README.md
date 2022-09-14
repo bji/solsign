@@ -29,6 +29,25 @@ The whole point of solsign is to sign transactions with maximum security -- loca
 
 solsign could be used with a very secure signing strategy such as copying Base64 encoded transactions to a USB drive, taking that USB drive to a completely airgapped computer, signing them there using solsign, and then copying the signed transactions back to the internet-connected computer that will submit them to the network using the same USB drive.  In this way, keys can live completely on an airgapped computer, but arbitrary transactions can still be signed and submitted to the network.
 
+# Installing solsign #
+
+You should build solsign from source.  To do so, first install the rust compiler if you have not done so already; instructions are here: https://www.rust-lang.org/tools/install
+
+Next, clone the solsign source:
+
+`git clone https://github.com/bji/solsign.git`
+
+Finally, build it:
+
+`cargo build --manifest-path solsign/Cargo.toml --release`
+
+You will find the solsign binary at solsign/target/release/solsign.
+
+**Prebuilt Binaries**
+
+It is not recommended that you install a pre-built binary since you cannot be certain of the authenticity of the
+binary.  However, if you're willing to take the chance, here is a Linux binary prebuilt by the author:
+
 # Using solsign #
 
 `solsign --help` will show brief help text describing its usage.
