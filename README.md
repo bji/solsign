@@ -6,10 +6,10 @@ solsign is a small utility program that facilitates signing solana transactions 
 means using keys that are stored locally on the user's computer to sign transactions without connection to any
 "wallet" software.
 
-solsign reads complete solana transactions that have been encoded in Base64 format.  Base64 allows the binary data
-of a solana transaction to be presented in only text characters suitable for copying and pasting into a terminal
-window.  solsign reads transactions, signs them, and then either outputs the newly signed transaction (also in
-Base64 format), and also outputs the signature of the transaction if the transaction is now completely signed.
+solsign reads complete solana transactions that have been encoded in Base64 format.  Base64 allows the binary data of
+a solana transaction to be presented in only text characters suitable for copying and pasting into a terminal window.
+solsign reads transactions, signs them, and then outputs the newly signed transaction (also in Base64 format), and
+also outputs the signature of the transaction if the transaction is now completely signed.
 
 solsign supports a few common workflows:
 
@@ -138,7 +138,7 @@ The keys derived from the mnemonic and passphrase are shown and the user
 selects (1) as their key.  The reason for deriving multiple keys is that
 the same mnemonic and passphrase can generate keys differently depending
 on the program that was used to generate the key.  The solana command line
-would produce the key at (0), and most wallets would produce they key
+would produce the key at (0), and most wallets would produce the key
 at (1), unless the user has created multiple accounts from the same
 wallet in which case some of the later key derivations may be the correct
 one.
