@@ -19,7 +19,7 @@ use std::io::Write;
  **/
 
 
-/*    34567890123456789012345678901234567890123456789012345678901234567890123456789 */
+/*      4567890123456789012345678901234567890123456789012345678901234567890123456789 */
 #[rustfmt::skip]
 fn usage_string() -> String
 {
@@ -193,6 +193,15 @@ fn generate_seed_from_seed_phrase_and_passphrase(
     let mut seed = vec![0u8; PBKDF2_BYTES];
     pbkdf2::pbkdf2::<hmac::Hmac<sha2::Sha512>>(seed_phrase.as_bytes(), salt.as_bytes(), PBKDF2_ROUNDS, &mut seed);
     seed
+}
+
+fn print_base64(bytes : &[u8])
+{
+    let b = base64::encode(&bytes);
+    for idx in (0..b.len()).step_by(72) {
+        let end = std::cmp::min(idx + 72, b.len());
+        println!("    {}", &b[idx..end]);
+    }
 }
 
 impl Transaction
@@ -757,118 +766,115 @@ fn main()
         }
     }
 
-    // If no-prompt, just read a single transaction, decode it, sign it, and output the result
-    if no_prompt {
-        println!("No prompt TODO");
-        std::process::exit(0);
-    }
+    // If no-prompt, don't read keys in from stdin
+    if !no_prompt {
+        loop {
+            println!("\n  Public keys provided thus far:\n");
 
-    // Now read keys from stdin
-    loop {
-        println!("\n  Public keys provided thus far:\n");
-
-        if keys_in_order.len() == 0 {
-            println!("    None");
-        }
-        else {
-            for key in &keys_in_order {
-                println!("    {}", key);
+            if keys_in_order.len() == 0 {
+                println!("    None");
             }
-        }
+            else {
+                for key in &keys_in_order {
+                    println!("    {}", key);
+                }
+            }
 
-        let mnemonic =
-            rpassword::prompt_password("\n  Enter mnemonic seed words of next key, or press ENTER to continue: ")
-                .unwrap_or_else(|_| {
-                    println!("\n");
-                    std::process::exit(0);
-                });
+            let mnemonic =
+                rpassword::prompt_password("\n  Enter mnemonic seed words of next key, or press ENTER to continue: ")
+                    .unwrap_or_else(|_| {
+                        println!("\n");
+                        std::process::exit(0);
+                    });
 
-        if mnemonic.len() == 0 {
-            break;
-        }
+            if mnemonic.len() == 0 {
+                break;
+            }
 
-        let mnemonic = mnemonic.trim();
+            let mnemonic = mnemonic.trim();
 
-        let passphrase = rpassword::prompt_password("\n  Enter passphrase seed, or press ENTER for no passphrase: ")
-            .unwrap_or_else(|_| {
-                println!("\n");
-                std::process::exit(0);
-            });
+            let passphrase =
+                rpassword::prompt_password("\n  Enter passphrase seed, or press ENTER for no passphrase: ")
+                    .unwrap_or_else(|_| {
+                        println!("\n");
+                        std::process::exit(0);
+                    });
 
-        let seed = generate_seed_from_seed_phrase_and_passphrase(&mnemonic, &passphrase);
+            let seed = generate_seed_from_seed_phrase_and_passphrase(&mnemonic, &passphrase);
 
-        // Now derive keypairs directly, and with derivation path m/44'/501'/0'/0' through m/44'/501'/0'/9', to cover
-        // all expected possible sources of mnemonics and passphrases (i.e. solana-keygen plus standard wallets).
-        // Then let the user choose which was their key (or none!).
-        let mut keypairs = Vec::<(String, ed25519_dalek::Keypair)>::new();
+            // Now derive keypairs directly, and with derivation path m/44'/501'/0'/0' through m/44'/501'/0'/9', to
+            // cover all expected possible sources of mnemonics and passphrases (i.e. solana-keygen plus standard
+            // wallets).  Then let the user choose which was their key (or none!).
+            let mut keypairs = Vec::<(String, ed25519_dalek::Keypair)>::new();
 
-        keypairs.push((
-            "                ".to_string(),
-            keypair_from_seed(&seed).unwrap_or_else(|e| {
-                eprintln!("\n{}\n", e);
-                std::process::exit(-1);
-            })
-        ));
-
-        for i in 0..9 {
-            let mut path = Vec::<derivation_path::ChildIndex>::new();
-            path.push(derivation_path::ChildIndex::Hardened(44));
-            path.push(derivation_path::ChildIndex::Hardened(501));
-            path.push(derivation_path::ChildIndex::Hardened(0));
-            path.push(derivation_path::ChildIndex::Hardened(i));
-            let derivation_path = derivation_path::DerivationPath::new(&*path);
             keypairs.push((
-                format!("m/44'/501'/0'/{}'", i),
-                keypair_from_seed_and_derivation_path(&seed, derivation_path).unwrap_or_else(|e| {
+                "                ".to_string(),
+                keypair_from_seed(&seed).unwrap_or_else(|e| {
                     eprintln!("\n{}\n", e);
                     std::process::exit(-1);
                 })
             ));
-        }
 
-        loop {
-            println!("\n  Derived Keys:\n");
-
-            for i in 0..keypairs.len() {
-                let kp = &keypairs[i];
-                let padding = if i > 9 { " ".to_string() } else { "  ".to_string() };
-                println!("   ({}){}{}    {}", i, padding, kp.0, bs58::encode(kp.1.public.to_bytes()).into_string());
+            for i in 0..9 {
+                let mut path = Vec::<derivation_path::ChildIndex>::new();
+                path.push(derivation_path::ChildIndex::Hardened(44));
+                path.push(derivation_path::ChildIndex::Hardened(501));
+                path.push(derivation_path::ChildIndex::Hardened(0));
+                path.push(derivation_path::ChildIndex::Hardened(i));
+                let derivation_path = derivation_path::DerivationPath::new(&*path);
+                keypairs.push((
+                    format!("m/44'/501'/0'/{}'", i),
+                    keypair_from_seed_and_derivation_path(&seed, derivation_path).unwrap_or_else(|e| {
+                        eprintln!("\n{}\n", e);
+                        std::process::exit(-1);
+                    })
+                ));
             }
 
-            print!("\n  Select a derived key 0 - 9 from above, or press ENTER to skip: ");
-            let _ = std::io::stdout().flush();
+            loop {
+                println!("\n  Derived Keys:\n");
 
-            let mut line = "".to_string();
-            std::io::stdin().read_line(&mut line).unwrap_or_else(|_| {
-                std::process::exit(0);
-            });
+                for i in 0..keypairs.len() {
+                    let kp = &keypairs[i];
+                    let padding = if i > 9 { " ".to_string() } else { "  ".to_string() };
+                    println!("   ({}){}{}    {}", i, padding, kp.0, bs58::encode(kp.1.public.to_bytes()).into_string());
+                }
 
-            if line.len() == 0 {
-                println!("\n");
-                std::process::exit(0);
-            }
+                print!("\n  Select a derived key 0 - 9 from above, or press ENTER to skip: ");
+                let _ = std::io::stdout().flush();
 
-            let line = line.replace("\n", "").replace("\r", "");
+                let mut line = "".to_string();
+                std::io::stdin().read_line(&mut line).unwrap_or_else(|_| {
+                    std::process::exit(0);
+                });
 
-            if line.len() == 0 {
-                break;
-            }
+                if line.len() == 0 {
+                    println!("\n");
+                    std::process::exit(0);
+                }
 
-            if let Ok(selection) = u8::from_str_radix(&line, 10).map(|s| s as usize) {
-                if selection < keypairs.len() {
-                    let kp = keypairs.remove(selection).1;
-                    let public_key = bs58::encode(kp.public.to_bytes()).into_string();
-                    if keys.insert(public_key.clone(), kp).is_none() {
-                        keys_in_order.push(public_key);
-                    }
+                let line = line.replace("\n", "").replace("\r", "");
+
+                if line.len() == 0 {
                     break;
+                }
+
+                if let Ok(selection) = u8::from_str_radix(&line, 10).map(|s| s as usize) {
+                    if selection < keypairs.len() {
+                        let kp = keypairs.remove(selection).1;
+                        let public_key = bs58::encode(kp.public.to_bytes()).into_string();
+                        if keys.insert(public_key.clone(), kp).is_none() {
+                            keys_in_order.push(public_key);
+                        }
+                        break;
+                    }
+                    else {
+                        println!("\n\n  Invalid selection, try again.\n");
+                    }
                 }
                 else {
                     println!("\n\n  Invalid selection, try again.\n");
                 }
-            }
-            else {
-                println!("\n\n  Invalid selection, try again.\n");
             }
         }
     }
@@ -932,33 +938,30 @@ fn main()
                                 }
                             });
 
-                            // Now, if the transaction is completely signed, emit the signature
-                            if unsigned.len() == 0 {
-                                if decoded_tx.signed_read_write_addresses.len() > 0 {
-                                    if let Some(signature) = decoded_tx.signed_read_write_addresses[0].signature {
-                                        println!(
-                                            "\n  Signature:\n\n {}",
-                                            bs58::encode(signature.to_bytes()).into_string()
-                                        );
+                            // Now output
+                            let mut encoded_tx = vec![];
+                            match decoded_tx.encode(&mut encoded_tx) {
+                                Ok(()) => {
+                                    // Now, if the transaction is completely signed, emit the signature
+                                    if unsigned.len() == 0 {
+                                        if let Some(signature) = decoded_tx.signed_read_write_addresses[0].signature {
+                                            println!("\n  Transaction is complete:\n");
+                                            print_base64(&encoded_tx);
+                                            println!(
+                                                "\n  Signature:\n\n   {}",
+                                                bs58::encode(signature.to_bytes()).into_string()
+                                            );
+                                        }
                                     }
-                                }
-                            }
-                            // Else, emit the partially signed tx
-                            else {
-                                let mut encoded_tx = vec![];
-                                match decoded_tx.encode(&mut encoded_tx) {
-                                    Ok(()) => {
+                                    // Else, emit the partially signed tx
+                                    else {
                                         println!("\n  Pubkeys still needed to sign:");
                                         unsigned.iter().for_each(|pubkey| println!("\n    {}", pubkey));
                                         println!("\n  Partially signed transaction:\n");
-                                        let b = base64::encode(&encoded_tx);
-                                        for idx in (0..b.len()).step_by(72) {
-                                            let end = std::cmp::min(idx + 72, b.len());
-                                            println!("    {}", &b[idx..end]);
-                                        }
-                                    },
-                                    Err(e) => eprintln!("\n{}\n", e)
-                                }
+                                        print_base64(&encoded_tx);
+                                    }
+                                },
+                                Err(e) => eprintln!("\n{}\n", e)
                             }
 
                             break;
@@ -979,6 +982,12 @@ fn main()
                     }
                 },
             }
+        }
+
+        // no_prompt stops after the first transaction
+        if no_prompt {
+            println!("");
+            break;
         }
     }
 }
