@@ -49,6 +49,7 @@ It is not recommended that you install a pre-built binary since you cannot be ce
 binary.  However, if you're willing to take the chance, here is are binaries prebuilt by the author:
 
 ***Linux***
+
 [https://github.com/bji/solsign/blob/master/prebuilt/linux/solsign?raw=true](https://github.com/bji/solsign/blob/master/prebuilt/linux/solsign?raw=true)
 
 Save this file and then use `chmod +x solsign` to make it executable.
