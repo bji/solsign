@@ -54,6 +54,13 @@ binary.  However, if you're willing to take the chance, here are binaries prebui
 
 Save this file and then use `chmod +x solsign` to make it executable.
 
+***Mac OS X***
+
+[https://github.com/bji/solsign/blob/master/prebuilt/osx/solsign?raw=true](https://github.com/bji/solsign/blob/master/prebuilt/osx/solsign?raw=true)
+
+Save this file and then use `chmod +x solsign` to make it executable.
+
+
 # Using solsign #
 
 `solsign --help` will show brief help text describing its usage.
