@@ -1,6 +1,6 @@
 [package]
 name = "solsign"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "solsign is a small utility program that facilitates signing solana transactions off-line.  ***Off-line signing*** means using keys that are stored locally on the user's computer to sign transactions without connection to any 'wallet' software"
 license = "GPL-3.0-only"

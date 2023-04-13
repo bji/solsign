@@ -311,4 +311,4 @@ Usage: solsign [--help]
 
 # License #
 
-Public domain, do what you want with it.
+GPLv3, see LICENSE.txt.
