@@ -2,6 +2,8 @@
 name = "solsign"
 version = "0.1.0"
 edition = "2021"
+description = "solsign is a small utility program that facilitates signing solana transactions off-line.  ***Off-line signing*** means using keys that are stored locally on the user's computer to sign transactions without connection to any 'wallet' software"
+license = "GPL-3.0-only"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -9,7 +11,6 @@ edition = "2021"
 base64 = "=0.13.0"
 bs58 = "=0.4.0"
 derivation-path = "=0.2.0"
-ed25519 = "=1.5.2"
 ed25519-dalek = "=1.0.1"
 ed25519-dalek-bip32 = "=0.2.0"
 hmac = "=0.12.1"
